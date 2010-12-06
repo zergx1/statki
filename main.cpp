@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[])
 {
+    //CO SIE KURWO GAPISZ!!!!!
     int kurwa;
     QApplication a(argc, argv);
     statki w;
