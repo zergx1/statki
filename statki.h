@@ -12,6 +12,9 @@ class statki : public QMainWindow {
 public:
     statki(QWidget *parent = 0);
     ~statki();
+public slots:
+    void start();
+
 
 protected:
     void changeEvent(QEvent *e);
