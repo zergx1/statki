@@ -2,6 +2,7 @@
 #define STATKI_H
 
 #include <QMainWindow>
+#include <QTableWidgetItem>
 
 namespace Ui {
     class statki;
@@ -14,6 +15,7 @@ public:
     ~statki();
 public slots:
     void start();
+    void akcja(QTableWidgetItem *item);
 
 
 protected:
