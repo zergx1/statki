@@ -134,7 +134,7 @@ void statki::akcja(QTableWidgetItem *item)
         for(int i=0;i<pol;i++)
         {
             temp = ui->plansza_1->item(item->row()+i,item->column());
-            temp->setText(tr("#"));
+            temp->setText(tr("X"));
             temp->setBackgroundColor(Qt::green);
 
 
