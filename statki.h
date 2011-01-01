@@ -13,9 +13,11 @@ class statki : public QMainWindow {
 public:
     statki(QWidget *parent = 0);
     ~statki();
+    bool czyustawic(QTableWidgetItem *item,int pol); // sprawdza pola czy moze ustawic kolejny statek
 public slots:
     void start();
     void akcja(QTableWidgetItem *item);
+
 
 
 protected:
@@ -23,6 +25,7 @@ protected:
 
 private:
     Ui::statki *ui;
+    int m4,m3,m2,m1;
 };
 
 #endif // STATKI_H
