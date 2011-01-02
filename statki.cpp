@@ -2,6 +2,7 @@
 #include <exception>
 #include "ui_statki.h"
 #include <ctime>
+#include <QMessageBox>
 
 statki::statki(QWidget *parent) :
     QMainWindow(parent),
@@ -11,10 +12,12 @@ statki::statki(QWidget *parent) :
     // CONNECTY
     connect(ui->pb_start,SIGNAL(clicked()),this,SLOT(start())); // DLA Guzika start
     connect(ui->plansza_1,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),this,SLOT(akcja(QTableWidgetItem *)));
-    //connect(ui->plansza_2,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),this,SLOT(akcja(QTableWidgetItem *)));
+    connect(ui->plansza_2,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),this,SLOT(akcja2(QTableWidgetItem *)));
+    srand(time(NULL));
+
 
     //USTAWIANIE PLANSZ
-    ui->plansza_1->setRowCount(10); //  ustawia 10 pinowych pol (1-10)
+    ui->plansza_1->setRowCount(10); // ustawia 10 pinowych pol (1-10)
     ui->plansza_2->setRowCount(10);
 
     ui->plansza_1->setColumnCount(10); // To samo co wyzej tylko ze poziomych (A-J)
@@ -34,8 +37,6 @@ statki::statki(QWidget *parent) :
 
 
     // USTAWIENIE KOMOREK I WLEPIENIE ICH DO PLANSZ
-    QList<QTableWidgetItem *> itemLists1; // to dziala tak samo jak wektor
-    QList<QTableWidgetItem *> itemLists2;
 
     for(int i=0;i<100;i++)
     {
@@ -82,14 +83,15 @@ statki::statki(QWidget *parent) :
     m3=2;
     m2=3;
     m1=4;
-    
+
+    zycie1 = zycie2 = 1*m4+2*m3+3*m2+4*m1;
+
 
 
 }
 
 void statki::start()
 {
-
     if(ui->pb_start->text() == "Faza rozstawiania")
     {
 
@@ -97,14 +99,15 @@ void statki::start()
         ui->plansza_1->setEnabled(true);
         ui->plansza_2->setEnabled(true);
         ui->pb_start->setText(tr("Rozpocznij gre"));
+        cpurozstaw();
         ui->pb_start->setEnabled(false);
-        rozstaw();
+        //ui->plansza_2->setEnabled(false);
     }
     else if(ui->pb_start->text() == "Rozpocznij gre")
     {
 
         ui->gb_stat->setEnabled(false);
-
+        ui->plansza_2->setEnabled(true);
         ui->pb_start->setText(tr("Zatrzymaj"));
     }
     else if(ui->pb_start->text() == "Zatrzymaj")
@@ -128,7 +131,7 @@ void statki::start()
 
 void statki::akcja(QTableWidgetItem *item)
 {
-    
+
 
     QTableWidgetItem *temp;
     int pol = 0;
@@ -203,7 +206,7 @@ void statki::akcja(QTableWidgetItem *item)
 
 bool statki::czyustawic(QTableWidgetItem *item,int pol)
 {
-    QTableWidgetItem *temp,*temp2;
+
     int pocz = 0;
     if(ui->rb_pion->isChecked())
         pocz = item->row() + pol;
@@ -218,6 +221,8 @@ bool statki::czyustawic(QTableWidgetItem *item,int pol)
         if(ui->rb_pion->isChecked()){
             if( item->row()+i > 9 or item->row()+i < 0)
                 continue;
+            if(ui->plansza_1->item(item->row()+i,item->column())->backgroundColor() == Qt::gray)
+                return false;
             if(item->column()+1 < 10 ) // sprawdz czy miesic sie w kolumnach
                 if(ui->plansza_1->item(item->row()+i,item->column()+1)->backgroundColor() == Qt::gray) //jesli tak to sprawdz dopiero item
                     return false;
@@ -236,6 +241,8 @@ bool statki::czyustawic(QTableWidgetItem *item,int pol)
                     else if(ui->rb_poziom->isChecked()){
             if( item->column()+i > 9 or item->column()+i < 0)
                 continue;
+            if(ui->plansza_1->item(item->row(),item->column()+i)->backgroundColor() == Qt::gray)
+                return false;
             if(item->row()+1 < 10 ) // sprawdz czy miesic sie w kolumnach
                 if(ui->plansza_1->item(item->row()+1,item->column()+i)->backgroundColor() == Qt::gray) //jesli tak to sprawdz dopiero item
                     return false;
@@ -253,92 +260,225 @@ bool statki::czyustawic(QTableWidgetItem *item,int pol)
     return true;
 
 }
-bool statki::czyustawic1(int x,int y,int p,int m)
+
+void statki::akcja2(QTableWidgetItem *item)
 {
-    QTableWidgetItem *temp;
-                if(p==0)
-                {       //w pionie
-                    if(y+m<=10) //czy sie zmiesci w pionie
-                    {
-                            for(int i=-1;i<=m;i++)
-                            {
-                                if(y==0)
-                                {
-                                    i=0;
-                                }              //¿eby nie sprawdzaæ nad
-                                for(int j=-1;j<=1;j++)
-                                {
-                                    if(x==0){j=0;}          //¿eby nei sprawdzaæ z lewej
+    if(item->text() != "X"){
+        if(item->text() == " "){
+            item->setBackgroundColor(Qt::gray);
+            zycie2--;
+            if(zycie2 == 0)
+            {
+                QMessageBox::warning(this, tr("Statki"),tr("You win! Good Job"),QMessageBox::Ok);
+            }
 
-                                    temp=ui->plansza_2->item(y+i,x+j);
-                                    if(temp->backgroundColor()==Qt::red)
-                                        return false;
-                                    else
-                                        temp->setBackgroundColor(Qt::green);
-                                    if(y+m==10 && i==m-1){i=5;}         //¿eby nie sprawdzaæ pod
-                                    if(x==9 && j==0){j=2;}  //¿eby nie sprawdzaæ z prawej
-                                }
-                            }
-                    }
-                    else
-                        return false;
-                }
-                else
-                {       //w poziomie
-                    if(x+m<=10) //czy sie zmiesci w poziomie
-                    {
-                            for(int i=-1;i<=m;i++)
-                            {
-                                if(x==0){i=0;}              //¿eby nie sprawdzaæ z lewej
-                                for(int j=-1;j<=1;j++)
-                                {
-                                    if(y==0){j=0;}          //¿eby nei sprawdzaæ z góry
-                                    temp=ui->plansza_2->item(y+i,x+j);
-                                    if(temp->backgroundColor()==Qt::red)
-                                        return false;
-                                    else
-                                        temp->setBackgroundColor(Qt::green);
-                                    if(y==9 && j==0){j=2;}         //¿eby nie sprawdzaæ pod
-                                    if(x==9){i=5;}                 //¿eby nie sprawdzaæ z prawej
-                                }
-                            }
-                    }
-                    else
-                        return false;
-                }
-        return true;
-}
-
-
-void statki::rozstaw()
-{
-    srand(time(NULL));
-    bool koniec =true;
-    int koniec1,x,y,p;
-    koniec1=10;
-    QTableWidgetItem *temp;
-    while(koniec)
-    {
-    p=rand()%2;         //losujemy czy w pionie=0 czy poziomie=1
-    x=rand()%10;
-    y=rand()%10;
-
-    if(koniec1==10)
-            koniec=false;
-        else
-            koniec1--;
-
-
-        if(czyustawic1(3,0,0,1)==true)  // na ta chwile na sztywno probujemy sprawddzic pole kolumna=3 rzad=0 dla jednomasztowca ustawionego pionowo
+        }
+        item->setText(tr("X"));
+        cpustrzel();
+        if(zycie1 == 0)
         {
-        temp=ui->plansza_2->item(1,1);
-        temp->setBackgroundColor(Qt::red);
-        //temp->setText(" ");
-        temp->setText(QString::number(koniec1));
+            QMessageBox::warning(this, tr("Statki"),tr("You lose, Sorry"),QMessageBox::Ok);
         }
     }
 
 }
+
+void statki::cpustrzel()
+{
+    int los = rand()% itemLists1.length();
+    if(los != 0){
+    itemLists1.at(los)->setText(tr("X"));
+    itemLists1.removeAt(los);
+    if(itemLists1.at(los)->backgroundColor() == Qt::gray)
+        zycie1--;
+}
+
+}
+
+void statki::cpurozstaw()
+{
+
+    QList<QTableWidgetItem *> templist;
+    templist = itemLists2;
+
+    int tm4,tm3,tm2,tm1;
+    tm4 = m4;
+    tm3 = m3;
+    tm2 = m2;
+    tm1 = m1;
+
+    int los;
+    int pion;
+    bool ustaw;
+    QTableWidgetItem *temp,*item;
+
+
+
+    while((tm4+tm3+tm2+tm1) != 0)
+    {
+        los = rand()%templist.length();
+        pion = rand()%2;
+        item = templist.at(los);
+
+        if (tm4>0)
+        {
+            ustaw = czyustawic2(item,4,pion);
+            if(ustaw)
+            {
+                for(int i=0;i<4;i++)
+                {
+                    if(pion==0)
+                        temp = ui->plansza_2->item(item->row()+i,item->column());
+                    else if(pion==1)
+                        temp = ui->plansza_2->item(item->row(),item->column()+i);
+                    //temp->setText(tr("X"));
+
+                    temp->setText(tr(" "));
+                    temp->setBackgroundColor(Qt::gray);
+                    templist.removeAt(los);
+
+                }
+                tm4--;
+
+            }
+           
+
+        }
+        if (tm3>0)
+        {
+            ustaw = czyustawic2(item,3,pion);
+            if(ustaw)
+            {
+                for(int i=0;i<3;i++)
+                {
+                    if(pion==0)
+                        temp = ui->plansza_2->item(item->row()+i,item->column());
+                    else if(pion==1)
+                        temp = ui->plansza_2->item(item->row(),item->column()+i);
+                    //temp->setText(tr("X"));
+
+                    temp->setText(tr(" "));
+                    temp->setBackgroundColor(Qt::gray);
+                    templist.removeAt(los);
+
+                }
+                tm3--;
+
+            }
+
+
+        }
+        if (tm2>0)
+        {
+            ustaw = czyustawic2(item,2,pion);
+            if(ustaw)
+            {
+                for(int i=0;i<2;i++)
+                {
+                    if(pion==0)
+                        temp = ui->plansza_2->item(item->row()+i,item->column());
+                    else if(pion==1)
+                        temp = ui->plansza_2->item(item->row(),item->column()+i);
+                    //temp->setText(tr("X"));
+
+                    temp->setText(tr(" "));
+                    temp->setBackgroundColor(Qt::gray);
+                    templist.removeAt(los);
+
+                }
+                tm2--;
+
+            }
+
+
+        }
+        if (tm1>0)
+        {
+            ustaw = czyustawic2(item,1,pion);
+            if(ustaw)
+            {
+                for(int i=0;i<1;i++)
+                {
+                    if(pion==0)
+                        temp = ui->plansza_2->item(item->row()+i,item->column());
+                    else if(pion==1)
+                        temp = ui->plansza_2->item(item->row(),item->column()+i);
+                    //temp->setText(tr("X"));
+
+                    temp->setText(tr(" "));
+                    temp->setBackgroundColor(Qt::gray);
+                    templist.removeAt(los);
+
+                }
+                tm1--;
+
+            }
+
+
+        }
+
+    }
+
+}
+
+bool statki::czyustawic2(QTableWidgetItem *item,int pol,int pion)
+{
+
+    int pocz = 0;
+    if(ui->rb_pion->isChecked())
+        pocz = item->row() + pol;
+    else if(ui->rb_poziom->isChecked())
+        pocz = item->column()+pol;
+
+    if(pocz > 10 or pocz<-1)
+        return false;
+
+    for(int i=-1;i<pol+1;i++)
+    {
+        if(pion == 0){
+            if( item->row()+i > 9 or item->row()+i < 0)
+                continue;
+            if(ui->plansza_2->item(item->row()+i,item->column())->text() == " ")
+                return false;
+            if(item->column()+1 < 10 ) // sprawdz czy miesic sie w kolumnach
+                if(ui->plansza_2->item(item->row()+i,item->column()+1)->text() == " ") //jesli tak to sprawdz dopiero item
+                    return false;
+            if(item->column()-1 > -1 )
+                if(ui->plansza_2->item(item->row()+i,item->column()-1)->text() == " ")
+                    return false;
+            if(item->row()-1 > -1)
+                if(ui->plansza_2->item(item->row()-1,item->column())->text() == " ")
+                    return false;
+            if(item->row()+pol < 10)
+                if(ui->plansza_2->item(item->row()+pol,item->column())->text() == " ")
+                    return false;
+
+
+        }
+                    else if(pion == 1){
+            if( item->column()+i > 9 or item->column()+i < 0)
+                continue;
+            if(ui->plansza_2->item(item->row(),item->column()+i)->text() == " ")
+                return false;
+            if(item->row()+1 < 10 ) // sprawdz czy miesic sie w kolumnach
+                if(ui->plansza_2->item(item->row()+1,item->column()+i)->text() == " ") //jesli tak to sprawdz dopiero item
+                    return false;
+            if(item->row()-1 > -1 )
+                if(ui->plansza_2->item(item->row()-1,item->column()+i)->text() == " ")
+                    return false;
+            if(item->column()-1 > -1)
+                if(ui->plansza_2->item(item->row(),item->column()-1)->text() == " ")
+                    return false;
+            if(item->column()+pol < 10)
+                if(ui->plansza_2->item(item->row(),item->column()+pol)->text() == " ")
+                    return false;
+        }
+    }
+    return true;
+
+}
+
+
 
 statki::~statki()
 {
@@ -356,3 +496,4 @@ void statki::changeEvent(QEvent *e)
         break;
     }
 }
+

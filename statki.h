@@ -14,11 +14,14 @@ public:
     statki(QWidget *parent = 0);
     ~statki();
     bool czyustawic(QTableWidgetItem *item,int pol); // sprawdza pola czy moze ustawic kolejny statek
-    bool czyustawic1(int x,int y,int p,int m);  //sprawdza czy zaczynajac od pola (x,y) w pionie lub poziomie p mozna ustawic m maszatowiec
+    bool czyustawic2(QTableWidgetItem *item,int pol,int pion);
     void rozstaw();   //rozstawia statki komputera
+    void cpustrzel();
+    void cpurozstaw();
 public slots:
     void start();
     void akcja(QTableWidgetItem *item);
+    void akcja2(QTableWidgetItem *item);
 
 
 
@@ -28,6 +31,10 @@ protected:
 private:
     Ui::statki *ui;
     int m4,m3,m2,m1;
+    QList<QTableWidgetItem *> itemLists1; // to dziala tak samo jak wektor
+    QList<QTableWidgetItem *> itemLists2;
+    int zycie1,zycie2;
+
 };
 
 #endif // STATKI_H
