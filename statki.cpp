@@ -1,6 +1,7 @@
 #include "statki.h"
 #include <exception>
 #include "ui_statki.h"
+#include <ctime>
 
 statki::statki(QWidget *parent) :
     QMainWindow(parent),
@@ -10,6 +11,7 @@ statki::statki(QWidget *parent) :
     // CONNECTY
     connect(ui->pb_start,SIGNAL(clicked()),this,SLOT(start())); // DLA Guzika start
     connect(ui->plansza_1,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),this,SLOT(akcja(QTableWidgetItem *)));
+    //connect(ui->plansza_2,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),this,SLOT(akcja(QTableWidgetItem *)));
 
     //USTAWIANIE PLANSZ
     ui->plansza_1->setRowCount(10); //  ustawia 10 pinowych pol (1-10)
@@ -87,6 +89,7 @@ statki::statki(QWidget *parent) :
 
 void statki::start()
 {
+
     if(ui->pb_start->text() == "Faza rozstawiania")
     {
 
@@ -95,11 +98,13 @@ void statki::start()
         ui->plansza_2->setEnabled(true);
         ui->pb_start->setText(tr("Rozpocznij gre"));
         ui->pb_start->setEnabled(false);
+        rozstaw();
     }
     else if(ui->pb_start->text() == "Rozpocznij gre")
     {
 
         ui->gb_stat->setEnabled(false);
+
         ui->pb_start->setText(tr("Zatrzymaj"));
     }
     else if(ui->pb_start->text() == "Zatrzymaj")
@@ -248,8 +253,92 @@ bool statki::czyustawic(QTableWidgetItem *item,int pol)
     return true;
 
 }
+bool statki::czyustawic1(int x,int y,int p,int m)
+{
+    QTableWidgetItem *temp;
+                if(p==0)
+                {       //w pionie
+                    if(y+m<=10) //czy sie zmiesci w pionie
+                    {
+                            for(int i=-1;i<=m;i++)
+                            {
+                                if(y==0)
+                                {
+                                    i=0;
+                                }              //¿eby nie sprawdzaæ nad
+                                for(int j=-1;j<=1;j++)
+                                {
+                                    if(x==0){j=0;}          //¿eby nei sprawdzaæ z lewej
+
+                                    temp=ui->plansza_2->item(y+i,x+j);
+                                    if(temp->backgroundColor()==Qt::red)
+                                        return false;
+                                    else
+                                        temp->setBackgroundColor(Qt::green);
+                                    if(y+m==10 && i==m-1){i=5;}         //¿eby nie sprawdzaæ pod
+                                    if(x==9 && j==0){j=2;}  //¿eby nie sprawdzaæ z prawej
+                                }
+                            }
+                    }
+                    else
+                        return false;
+                }
+                else
+                {       //w poziomie
+                    if(x+m<=10) //czy sie zmiesci w poziomie
+                    {
+                            for(int i=-1;i<=m;i++)
+                            {
+                                if(x==0){i=0;}              //¿eby nie sprawdzaæ z lewej
+                                for(int j=-1;j<=1;j++)
+                                {
+                                    if(y==0){j=0;}          //¿eby nei sprawdzaæ z góry
+                                    temp=ui->plansza_2->item(y+i,x+j);
+                                    if(temp->backgroundColor()==Qt::red)
+                                        return false;
+                                    else
+                                        temp->setBackgroundColor(Qt::green);
+                                    if(y==9 && j==0){j=2;}         //¿eby nie sprawdzaæ pod
+                                    if(x==9){i=5;}                 //¿eby nie sprawdzaæ z prawej
+                                }
+                            }
+                    }
+                    else
+                        return false;
+                }
+        return true;
+}
 
 
+void statki::rozstaw()
+{
+    srand(time(NULL));
+    bool koniec =true;
+    int koniec1,x,y,p;
+    koniec1=10;
+    QTableWidgetItem *temp;
+    while(koniec)
+    {
+    p=rand()%2;         //losujemy czy w pionie=0 czy poziomie=1
+    x=rand()%10;
+    y=rand()%10;
+
+    if(koniec1==10)
+            koniec=false;
+        else
+            koniec1--;
+
+
+        if(czyustawic1(3,0,0,1)==true)  // na ta chwile na sztywno probujemy sprawddzic pole kolumna=3 rzad=0 dla jednomasztowca ustawionego pionowo
+        {
+        temp=ui->plansza_2->item(1,1);
+        temp->setBackgroundColor(Qt::red);
+        //temp->setText(" ");
+        temp->setText(QString::number(koniec1));
+        }
+    }
+
+}
 
 statki::~statki()
 {

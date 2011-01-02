@@ -14,6 +14,8 @@ public:
     statki(QWidget *parent = 0);
     ~statki();
     bool czyustawic(QTableWidgetItem *item,int pol); // sprawdza pola czy moze ustawic kolejny statek
+    bool czyustawic1(int x,int y,int p,int m);  //sprawdza czy zaczynajac od pola (x,y) w pionie lub poziomie p mozna ustawic m maszatowiec
+    void rozstaw();   //rozstawia statki komputera
 public slots:
     void start();
     void akcja(QTableWidgetItem *item);
