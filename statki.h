@@ -21,6 +21,7 @@ public:
     void init();
 public slots:
     void start();
+    void nowa();
     void akcja(QTableWidgetItem *item);
     void akcja2(QTableWidgetItem *item);
 

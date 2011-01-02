@@ -11,6 +11,7 @@ statki::statki(QWidget *parent) :
     ui->setupUi(this);
     // CONNECTY
     connect(ui->pb_start,SIGNAL(clicked()),this,SLOT(start())); // DLA Guzika start
+    connect(ui->pb_nowa,SIGNAL(clicked()),this,SLOT(nowa())); // DLA Guzika nowy
     connect(ui->plansza_1,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),this,SLOT(akcja(QTableWidgetItem *)));
     connect(ui->plansza_2,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),this,SLOT(akcja2(QTableWidgetItem *)));
     srand(time(NULL));
@@ -82,6 +83,11 @@ void statki::start()
         ui->pb_start->setText(tr("Zatrzymaj"));
     }
 
+}
+
+void statki::nowa()
+{
+    init();
 }
 
 void statki::akcja(QTableWidgetItem *item)
@@ -293,6 +299,7 @@ void statki::cpurozstaw()
                     //temp->setText(tr("X"));
 
                     temp->setText(tr(" "));
+                    temp->setBackgroundColor(Qt::red);
 
 
 
@@ -317,7 +324,7 @@ void statki::cpurozstaw()
                     //temp->setText(tr("X"));
 
                     temp->setText(tr(" "));
-
+                    temp->setBackgroundColor(Qt::red);
 
 
                 }
@@ -341,7 +348,7 @@ void statki::cpurozstaw()
                     //temp->setText(tr("X"));
 
                     temp->setText(tr(" "));
-
+                    temp->setBackgroundColor(Qt::red);
 
 
                 }
@@ -365,7 +372,7 @@ void statki::cpurozstaw()
                     //temp->setText(tr("X"));
 
                     temp->setText(tr(" "));
-
+                    temp->setBackgroundColor(Qt::red);
 
 
                 }
@@ -493,8 +500,6 @@ void statki::init()
      ui->pb_start->setEnabled(true);
 
 }
-
-
 
 statki::~statki()
 {
