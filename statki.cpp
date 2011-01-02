@@ -38,53 +38,8 @@ statki::statki(QWidget *parent) :
 
     // USTAWIENIE KOMOREK I WLEPIENIE ICH DO PLANSZ
 
-    for(int i=0;i<100;i++)
-    {
-        QTableWidgetItem *test = new QTableWidgetItem();
-        test->setBackgroundColor(Qt::blue);
-        itemLists1.push_front(test);
 
-        QTableWidgetItem *test2 = new QTableWidgetItem();
-        test2->setBackgroundColor(Qt::blue);
-        itemLists2.push_front(test2);
-    }
-    int k=-1;
-
-    for(int i=0;i<10;i++)
-        for(int j=0;j<10;j++)
-        {
-            k+=1;
-            ui->plansza_1->setItem(i,j,itemLists1[k]);
-            ui->plansza_2->setItem(i,j,itemLists2[k]);
-        }
-    // KONIEC WLEPIANIA KOMOREK DO PLANSZ
-
-   // ui->plansza_1->setCurrentCell(0,0,QItemSelectionModel::Select);
-   // ui->plansza_1->setCurrentCell(0,1,QItemSelectionModel::Select);
-
-
-
-
-    //ui->plansza_1->setItem(0, 0, test);
-   // ui->plansza_1->setItem(1, 1, test1);
-
-
-    // KONIEC USTAWIANIA PLANSZY
-
-
-    // ustawienia poczatkowe
-    ui->rb_4->setChecked(true);
-    ui->rb_pion->setChecked(true);
-    ui->gb_stat->setEnabled(false);
-    ui->plansza_1->setEnabled(false);
-    ui->plansza_2->setEnabled(false);
-
-    m4=1;
-    m3=2;
-    m2=3;
-    m1=4;
-
-    zycie1 = zycie2 = 1*m4+2*m3+3*m2+4*m1;
+    init();
 
 
 
@@ -101,7 +56,7 @@ void statki::start()
         ui->pb_start->setText(tr("Rozpocznij gre"));
         cpurozstaw();
         ui->pb_start->setEnabled(false);
-        //ui->plansza_2->setEnabled(false);
+        ui->plansza_2->setEnabled(false);
     }
     else if(ui->pb_start->text() == "Rozpocznij gre")
     {
@@ -267,18 +222,22 @@ void statki::akcja2(QTableWidgetItem *item)
         if(item->text() == " "){
             item->setBackgroundColor(Qt::gray);
             zycie2--;
-            if(zycie2 == 0)
-            {
-                QMessageBox::warning(this, tr("Statki"),tr("You win! Good Job"),QMessageBox::Ok);
-            }
+
 
         }
         item->setText(tr("X"));
         cpustrzel();
-        if(zycie1 == 0)
-        {
-            QMessageBox::warning(this, tr("Statki"),tr("You lose, Sorry"),QMessageBox::Ok);
-        }
+
+    }
+    if(zycie2 == 0)
+    {
+        QMessageBox::warning(this, tr("Statki"),tr("You win! Good Job"),QMessageBox::Ok);
+        init();
+    }
+    else if(zycie1 == 0)
+    {
+        QMessageBox::warning(this, tr("Statki"),tr("You lose, Sorry"),QMessageBox::Ok);
+        init();
     }
 
 }
@@ -334,8 +293,8 @@ void statki::cpurozstaw()
                     //temp->setText(tr("X"));
 
                     temp->setText(tr(" "));
-                    temp->setBackgroundColor(Qt::gray);
-                    templist.removeAt(los);
+
+
 
                 }
                 tm4--;
@@ -358,8 +317,8 @@ void statki::cpurozstaw()
                     //temp->setText(tr("X"));
 
                     temp->setText(tr(" "));
-                    temp->setBackgroundColor(Qt::gray);
-                    templist.removeAt(los);
+
+
 
                 }
                 tm3--;
@@ -382,8 +341,8 @@ void statki::cpurozstaw()
                     //temp->setText(tr("X"));
 
                     temp->setText(tr(" "));
-                    temp->setBackgroundColor(Qt::gray);
-                    templist.removeAt(los);
+
+
 
                 }
                 tm2--;
@@ -406,8 +365,8 @@ void statki::cpurozstaw()
                     //temp->setText(tr("X"));
 
                     temp->setText(tr(" "));
-                    temp->setBackgroundColor(Qt::gray);
-                    templist.removeAt(los);
+
+
 
                 }
                 tm1--;
@@ -475,6 +434,63 @@ bool statki::czyustawic2(QTableWidgetItem *item,int pol,int pion)
         }
     }
     return true;
+
+}
+
+void statki::init()
+{
+
+    for(int i=0;i<10;i++)
+        for(int j=0;j<10;j++)
+        {
+
+            ui->plansza_1->removeCellWidget(i,j);
+            ui->plansza_2->removeCellWidget(i,j);
+
+        }
+
+
+     itemLists1.clear(); // to dziala tak samo jak wektor
+     itemLists2.clear();
+
+
+     for(int i=0;i<100;i++)
+     {
+         QTableWidgetItem *test = new QTableWidgetItem();
+         test->setBackgroundColor(Qt::blue);
+         itemLists1.push_front(test);
+
+         QTableWidgetItem *test2 = new QTableWidgetItem();
+         test2->setBackgroundColor(Qt::blue);
+         itemLists2.push_front(test2);
+     }
+     int k=-1;
+
+     for(int i=0;i<10;i++)
+         for(int j=0;j<10;j++)
+         {
+             k+=1;
+             ui->plansza_1->setItem(i,j,itemLists1[k]);
+             ui->plansza_2->setItem(i,j,itemLists2[k]);
+         }
+
+     m4=1;
+     m3=2;
+     m2=3;
+     m1=4;
+
+     zycie1 =  4*m4+3*m3+2*m2+1*m1;
+     zycie2 =4*m4+3*m3+2*m2+1*m1;
+
+
+     ui->rb_4->setChecked(true);
+     ui->rb_pion->setChecked(true);
+     ui->gb_stat->setEnabled(false);
+     ui->plansza_1->setEnabled(false);
+     ui->plansza_2->setEnabled(false);
+
+     ui->pb_start->setText(tr("Faza rozstawiania"));
+     ui->pb_start->setEnabled(true);
 
 }
 

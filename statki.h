@@ -18,6 +18,7 @@ public:
     void rozstaw();   //rozstawia statki komputera
     void cpustrzel();
     void cpurozstaw();
+    void init();
 public slots:
     void start();
     void akcja(QTableWidgetItem *item);
