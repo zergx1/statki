@@ -183,7 +183,7 @@ void statki::akcja(QTableWidgetItem *item)
                 temp = ui->plansza_1->item(item->row()+i,item->column());
             else if(ui->rb_poziom->isChecked())
                 temp = ui->plansza_1->item(item->row(),item->column()+i);
-            temp->setText(tr("X"));
+            //temp->setText(tr("X"));
             temp->setBackgroundColor(Qt::gray);
 
         }}
@@ -228,7 +228,7 @@ bool statki::czyustawic(QTableWidgetItem *item,int pol)
 
 
         }
-        else if(ui->rb_poziom->isChecked())
+                    else if(ui->rb_poziom->isChecked()){
             if( item->column()+i > 9 or item->column()+i < 0)
                 continue;
             if(item->row()+1 < 10 ) // sprawdz czy miesic sie w kolumnach
@@ -243,6 +243,7 @@ bool statki::czyustawic(QTableWidgetItem *item,int pol)
             if(item->column()+pol < 10)
                 if(ui->plansza_1->item(item->row(),item->column()+pol)->backgroundColor() == Qt::gray)
                     return false;
+        }
     }
     return true;
 
