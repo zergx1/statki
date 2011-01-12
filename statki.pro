@@ -7,3 +7,5 @@ SOURCES += main.cpp \
     statki.cpp
 HEADERS += statki.h
 FORMS += statki.ui
+
+RESOURCES +=
